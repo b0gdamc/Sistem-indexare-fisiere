@@ -1,0 +1,43 @@
+// MIRAUTA BOGDAN-CONSTANTIN - 314CB
+
+## STRUCTURI DE DATE FOLOSITE
+
+1. Lista dublu inlantuita (TL2)
+    Tine evidenta tuturor fisierelor adaugate in sistem, in ordinea aparitiei lor. Fiecare nod contine un pointer catre o structura de tip File.
+
+2. File
+    Reprezinta continutul unui fisier stocat in sistem. Memoreaza ID-ul (numele), scorul de relevanta, un vector de string-uri pentru cuvintele-cheie si numarul acestora.
+
+3. Arbore de regasire (Trie)
+    Arbore multicai utilizat pentru indexarea eficienta a cuvintelor-cheie, implementat dupa modelul "Primul Fiu - Fratele Drept". Fiecare nod contine cate o litera. 
+    Parcurgerea de la radacina la un capat formeaza un cuvant. Copiii sunt menținuți ordonati alfabetic. La finalul fiecarui cuvant (in nodul terminal) exista o lista de referinte catre fisierele care il contin.
+
+4. Ref (Lista de referinte)
+    O lista simplu inlantuita de pointeri catre fisiere, aflata in nodurile terminale din arbore. Este mentinuta mereu ordonata crescator (alfabetic) dupa ID-ul fisierelor pentru a usura afisarea.
+
+5. Max-Heap (THeap)
+    O structura alocata dinamic (vector de pointeri catre File), utilizata strict la comanda TOPK. Cu ajutorul functiei de comparare "RelMaxHeap", fisierele sunt sortate in heap astfel: descrescator in functie de scorul de relevanta, iar in caz de egalitate, crescator lexicografic (dupa ID).
+
+
+## FUNCTII IMPLEMENTATE
+
+* ADD
+    Daca exista deja un fisier cu acel ID in lista dubla, afiseaza EXISTS. Daca nu, elimina duplicatele din vectorul de cuvinte-cheie primit la citire, aloca si creeaza fisierul, il adauga la finalul listei duble si insereaza fiecare cuvant in arbore.
+
+* DEL
+    Cauta fisierul in lista. Daca nu il gaseste, afiseaza NOT FOUND. Daca este gasit, se apeleaza functia recursiva de stergere din arbore pentru toate cuvintele-cheie pe care le detine (functie care elibereaza si nodurile ramase inutile). La final, sterge nodul din lista dubla si elibereaza toata memoria asociata fisierului.
+
+* FIND
+    Parcurge arborele litera cu litera folosind o functie ajutatoare (CautaFratele). Daca nu exista acel cuvant-cheie, afiseaza EMPTY. Daca exista, afiseaza numarul de fisiere si ID-urile acestora (extrase din lista de referinte).
+
+* ADDKW
+    Daca fisierul nu exista, afiseaza NOT FOUND. Daca fisierul exista si contine deja cuvantul-cheie, afiseaza OK. Altfel, realoca vectorul de cuvinte al fisierului pentru a-l include pe cel nou, dupa care adauga cuvantul si in arborele Trie.
+
+* DELKW
+    Daca fisierul nu exista, afiseaza NOT FOUND. Daca nu gaseste cuvantul in fisier, afiseaza OK. Daca il gaseste, il elimina din vectorul fisierului si din arbore. Daca in urma acestei operatii fisierul ramane cu 0 cuvinte-cheie, acesta este sters complet din memorie si din lista.
+
+* PRINT
+    Parcurge intreg arborele recursiv, in adancime. Formeaza cuvintele cu ajutorul unui buffer mentinut la fiecare nivel. Cand intalneste un nod terminal cu fisiere, afiseaza cuvantul, numarul de fisiere si ID-urile lor. Daca arborele este complet gol, afiseaza EMPTY.
+
+* TOPK
+    Cauta cuvantul-cheie in arbore. Daca nu exista, afiseaza EMPTY. Daca este gasit, numara fisierele din lista sa de referinte si aloca un Max-Heap de capacitate corespunzatoare. Insereaza in heap toate fisierele (ele se auto-sorteaza). Extrage de k ori din varful heap-ului si afiseaza ID-urile. (Daca k > numarul de fisiere, extrage doar cate fisiere exista). La final, distruge heap-ul pentru a elibera memoria.
